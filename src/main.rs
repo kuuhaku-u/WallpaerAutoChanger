@@ -1,7 +1,9 @@
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use std::process::Command;
+use dotenv::dotenv;
 fn main() {
+    dotenv().ok();
     // command
     let output = Command::new("xrandr")
         .output()
@@ -28,9 +30,8 @@ fn main() {
         ("", "")
     };
     println!("Resolution: {:?}", &resolution.0[0..4]);
-    let wallpaper_dir = "/home/ctp/Downloads/im";
+    let wallpaper_dir = std::env::var("FOLDER_PATH").expect("folder path  must be set.");
     let is_vertical =   &resolution.0[0..4] == "1920";
-    print!("is_vertical {}", is_vertical); // Get a list of wallpapers in the directory
     let mut wallpapers = std::fs::read_dir(wallpaper_dir)
         .expect("Failed to read wallpaper directory")
         .filter_map(Result::ok)
