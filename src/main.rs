@@ -12,18 +12,33 @@ fn main() {
         }
         Err(error) => println!("error: {error}"),
     }
-    dotenv().ok();
-    let wallpaper_dir = if user_input.trim() == "y" || user_input.trim() == "Y"  {
-        print!("YES");
-        user_input
+    let wallpaper_dir = if user_input.trim() == "y" || user_input.trim() == "Y" {
+        //     let output = Command::new("cd")
+        //     .arg("cd ~")
+        //     .output()
+        //     .expect("Failed to execute command");
+        // if output.status.success() {
+        //     println!("cd command executed successfully");
+        // } else {
+        //     let error_message = String::from_utf8_lossy(&output.stderr);
+        //     println!("Error executing cd command: {}", error_message);
+        // }
+        println!("Enter wallpaper Path :");
+        let mut wallpaper_path_from_user = String::new();
+        match io::stdin().read_line(&mut wallpaper_path_from_user) {
+            Ok(n) => {
+                println!("{n} bytes read");
+            }
+            Err(error) => println!("error: {error}"),
+        }
+        wallpaper_path_from_user
     } else {
-        print!("No");
+        dotenv().ok();
         std::env::var("FOLDER_PATH").expect("folder path  must be set.")
     };
     // command
-    let output = Command::new("xrandr")
-        .output()
-        .expect("Failed to execute xrandr command");
+    // println!("PAth {}", wallpaper_dir);
+    let output = Command::new("xrandr").output().expect("Failed to execute xrandr command");
     let output_str = String::from_utf8_lossy(&output.stdout);
     let active_line = output_str
         .lines()
@@ -46,7 +61,8 @@ fn main() {
         ("", "")
     };
     let is_vertical = &resolution.0[0..4] == "1920";
-    let mut wallpapers = std::fs::read_dir(wallpaper_dir)
+    let mut wallpapers = std::fs
+        ::read_dir(wallpaper_dir)
         .expect("Failed to read wallpaper directory")
         .filter_map(Result::ok)
         .map(|entry| entry.path())
@@ -54,6 +70,9 @@ fn main() {
         .collect::<Vec<_>>();
     let mut rng = thread_rng();
     wallpapers.shuffle(&mut rng);
+
+println!("Array {:? }",wallpapers);
+
     let wallpaper_path = wallpapers
         .iter()
         .find(|path| {
