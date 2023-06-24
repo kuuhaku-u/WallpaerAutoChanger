@@ -5,7 +5,7 @@ use std::io;
 use std::process::Command;
 fn main() {
     let mut user_input = String::new();
-    println!("Do you have wallpaper Path? type y or Y for yes ");
+    println!("\x1b[32m Do you have wallpaper Path? type y or Y for yes\x1b[0m ");
     match io::stdin().read_line(&mut user_input) {
         Ok(n) => {
             println!("{n} bytes read");
@@ -13,17 +13,7 @@ fn main() {
         Err(error) => println!("error: {error}"),
     }
     let wallpaper_dir = if user_input.trim() == "y" || user_input.trim() == "Y" {
-        //     let output = Command::new("cd")
-        //     .arg("cd ~")
-        //     .output()
-        //     .expect("Failed to execute command");
-        // if output.status.success() {
-        //     println!("cd command executed successfully");
-        // } else {
-        //     let error_message = String::from_utf8_lossy(&output.stderr);
-        //     println!("Error executing cd command: {}", error_message);
-        // }
-        println!("Enter wallpaper Path :");
+        println!("\x1b[32m Enter wallpaper Path : \x1b[0m");
         let mut wallpaper_path_from_user = String::new();
         match io::stdin().read_line(&mut wallpaper_path_from_user) {
             Ok(n) => {
@@ -70,9 +60,7 @@ fn main() {
         .collect::<Vec<_>>();
     let mut rng = thread_rng();
     wallpapers.shuffle(&mut rng);
-
 println!("Array {:? }",wallpapers);
-
     let wallpaper_path = wallpapers
         .iter()
         .find(|path| {
