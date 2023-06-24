@@ -1,9 +1,25 @@
+use dotenv::dotenv;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
+use std::io;
 use std::process::Command;
-use dotenv::dotenv;
 fn main() {
+    let mut user_input = String::new();
+    println!("Do you have wallpaper Path? type y or Y for yes ");
+    match io::stdin().read_line(&mut user_input) {
+        Ok(n) => {
+            println!("{n} bytes read");
+        }
+        Err(error) => println!("error: {error}"),
+    }
     dotenv().ok();
+    let wallpaper_dir = if user_input.trim() == "y" || user_input.trim() == "Y"  {
+        print!("YES");
+        user_input
+    } else {
+        print!("No");
+        std::env::var("FOLDER_PATH").expect("folder path  must be set.")
+    };
     // command
     let output = Command::new("xrandr")
         .output()
@@ -29,9 +45,7 @@ fn main() {
     } else {
         ("", "")
     };
-    println!("Resolution: {:?}", &resolution.0[0..4]);
-    let wallpaper_dir = std::env::var("FOLDER_PATH").expect("folder path  must be set.");
-    let is_vertical =   &resolution.0[0..4] == "1920";
+    let is_vertical = &resolution.0[0..4] == "1920";
     let mut wallpapers = std::fs::read_dir(wallpaper_dir)
         .expect("Failed to read wallpaper directory")
         .filter_map(Result::ok)
@@ -50,9 +64,7 @@ fn main() {
                 file_name.contains("ver")
             }
         })
-        .unwrap_or_else(|| {
-            wallpapers.choose(&mut rng).unwrap()
-        });
+        .unwrap_or_else(|| wallpapers.choose(&mut rng).unwrap());
     let gsettings_command = format!(
         "gsettings set org.gnome.desktop.background picture-uri \"file://{}\"",
         wallpaper_path.display()
