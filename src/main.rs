@@ -21,13 +21,14 @@ fn main() {
             }
             Err(error) => println!("error: {error}"),
         }
+        // print!("path {} ", wallpaper_path_from_user);
         wallpaper_path_from_user
     } else {
         dotenv().ok();
         std::env::var("FOLDER_PATH").expect("folder path  must be set.")
     };
     // command
-    // println!("PAth {}", wallpaper_dir);
+    println!("PAth {}", wallpaper_dir);
     let output = Command::new("xrandr").output().expect("Failed to execute xrandr command");
     let output_str = String::from_utf8_lossy(&output.stdout);
     let active_line = output_str
@@ -37,8 +38,8 @@ fn main() {
     let resolution = if let Some(resolution) = active_line.split_whitespace().nth(3) {
         let resolution_parts: Vec<&str> = resolution.split('x').collect();
         if resolution_parts.len() == 2 {
-            let width = resolution_parts[0].parse::<u32>().unwrap_or(0);
-            let height = resolution_parts[1].parse::<u32>().unwrap_or(0);
+            let width: u32 = resolution_parts[0].parse::<u32>().unwrap_or(0);
+            let height: u32 = resolution_parts[1].parse::<u32>().unwrap_or(0);
             if width > height {
                 (resolution, "horizontal")
             } else {
@@ -50,7 +51,7 @@ fn main() {
     } else {
         ("", "")
     };
-    let is_vertical = &resolution.0[0..4] == "1920";
+    let is_vertical: bool = &resolution.0[0..4] == "1920";
     let mut wallpapers = std::fs
         ::read_dir(wallpaper_dir)
         .expect("Failed to read wallpaper directory")
@@ -60,7 +61,7 @@ fn main() {
         .collect::<Vec<_>>();
     let mut rng = thread_rng();
     wallpapers.shuffle(&mut rng);
-println!("Array {:? }",wallpapers);
+    println!("Array {:? }", wallpapers);
     let wallpaper_path = wallpapers
         .iter()
         .find(|path| {
